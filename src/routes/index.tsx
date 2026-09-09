@@ -461,7 +461,7 @@ function Index() {
                   title: "أُمّتي — تطبيق وموقع إسلامي",
                   desc: "المصحف كاملاً بأصوات كبار القرّاء، مواقيت الصلاة، الأذكار، السبحة، ومكتبة الأحاديث.",
                   tags: ["موقع وتطبيق", "منشور"],
-                  url: "https://ummaty1.vercel.app/",
+                  url: "https://umatyy.vercel.app/",
                 },
                 {
                   img: workPharmacy,
@@ -554,7 +554,7 @@ function Index() {
                 <div>
                   <label className="block text-sm font-bold mb-2">الاسم ثلاثي <span className="text-accent">*</span></label>
                   <input
-                    required name="name" type="text" placeholder="مثال: حمزة محمد حسام"
+                    required name="name" type="text" placeholder="خالد أحمد السيد"
                     className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
                   />
                 </div>
@@ -806,3 +806,4 @@ function Index() {
     </div>
   );
 }
+
