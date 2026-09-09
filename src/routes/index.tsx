@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-coding.jpg";
 import workEs3efnny from "@/assets/work-es3efnny.png";
-import workUmmaty from "@/assets/work-1_3.png.asset.json";
-import workPharmacy from "@/assets/work-1_4.png.asset.json";
-import workUnistay from "@/assets/work-1_5.png.asset.json";
+import workUmmaty from "@/assets/1_3.PNG";
+import workPharmacy from "@/assets/1_4.PNG";
+import workUnistay from "@/assets/1_5.PNG";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Code2, FileText, ShoppingBag, Layout, Facebook, MessageCircle, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, LogOut, ShieldCheck, Smartphone, Languages } from "lucide-react";
@@ -457,21 +457,21 @@ function Index() {
             <div className="grid md:grid-cols-3 gap-6 mt-8 perspective-1000">
               {[
                 {
-                  img: workUmmaty.url,
+                  img: workUmmaty,
                   title: "أُمّتي — تطبيق وموقع إسلامي",
                   desc: "المصحف كاملاً بأصوات كبار القرّاء، مواقيت الصلاة، الأذكار، السبحة، ومكتبة الأحاديث.",
                   tags: ["موقع وتطبيق", "منشور"],
                   url: "https://ummaty1.vercel.app/",
                 },
                 {
-                  img: workPharmacy.url,
+                  img: workPharmacy,
                   title: "تطبيق إدارة مبيعات صيدلية",
                   desc: "لوحة تحكم شاملة: نقطة البيع، المخزون والأصناف، المشتريات، الموردين، والأرباح اليومية.",
                   tags: ["تطبيق إدارة", "عميل حقيقي"],
                   url: null,
                 },
                 {
-                  img: workUnistay.url,
+                  img: workUnistay,
                   title: "UNIstay finder",
                   desc: "تطبيق للبحث عن السكن الجامعي في كل محافظات مصر بأسعار واضحة وتواصل مباشر مع الملاك.",
                   tags: ["تطبيق", "تحت الإنشاء"],
