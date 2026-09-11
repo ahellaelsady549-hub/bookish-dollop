@@ -59,12 +59,17 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: "https://aswanyy-programer.vercel.app/",
             data: { full_name: fullName },
           },
         });
         if (error) throw error;
-        if (!data.session) setMsg("تم إنشاء الحساب! افتح بريدك واضغط على رابط التأكيد لتفعيل الحساب.");
+
+        if (data.session) {
+          setMsg("تم إنشاء الحساب بنجاح.");
+          return;
+        }
+
+        setMsg("تم إنشاء الحساب بنجاح، ويمكنك تسجيل الدخول الآن.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
