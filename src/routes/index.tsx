@@ -7,7 +7,7 @@ const workUmmaty = new URL("../assets/1_3.PNG", import.meta.url).href;
 const workPharmacy = new URL("../assets/1_4.PNG", import.meta.url).href;
 const workUnistay = new URL("../assets/1_5.PNG", import.meta.url).href;
 import { supabase } from "@/integrations/supabase/client";
-import { Code2, FileText, ShoppingBag, Layout, Facebook, MessageCircle, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, ShieldCheck, Smartphone, Languages } from "lucide-react";
+import { Code2, FileText, ShoppingBag, Layout, Facebook, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, ShieldCheck, Smartphone, Languages } from "lucide-react";
 
 type DbProject = {
   id: string;
@@ -228,7 +228,6 @@ function Index() {
           الاسم: fd.get("name"),
           الإيميل: fd.get("email"),
           رقم_الهاتف: fd.get("phone"),
-          رقم_الواتساب: fd.get("whatsapp"),
           نوع_الطلب: fd.get("type"),
           التفاصيل: fd.get("details"),
           خصم_عجلة_الحظ: prize ? `${prize}%` : "لم يلعب",
@@ -535,7 +534,7 @@ function Index() {
                 <CheckCircle2 className="w-8 h-8 text-accent-foreground" />
               </div>
               <h3 className="font-display text-2xl font-black mb-2">تم إرسال طلبك بنجاح</h3>
-              <p className="text-muted-foreground">سنتواصل معك قريباً على الإيميل أو واتساب.</p>
+              <p className="text-muted-foreground">سنتواصل معك قريباً على الإيميل.</p>
               <button onClick={() => setSent(false)} className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-bold hover:scale-105 transition-transform">
                 إرسال طلب آخر
               </button>
@@ -559,23 +558,13 @@ function Index() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-bold mb-2">رقم الهاتف <span className="text-accent">*</span></label>
-                  <input
-                    required name="phone" type="tel" placeholder="01012345678"
-                    className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
-                    dir="ltr"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-2">رقم الواتساب <span className="text-accent">*</span></label>
-                  <input
-                    required name="whatsapp" type="tel" placeholder="01012345678"
-                    className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
-                    dir="ltr"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">رقم الهاتف <span className="text-accent">*</span></label>
+                <input
+                  required name="phone" type="tel" placeholder="01012345678"
+                  className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
+                  dir="ltr"
+                />
               </div>
 
               <div>
@@ -785,19 +774,14 @@ function Index() {
               عندك فكرة؟ <span className="text-gradient">خلّينا ننفّذها</span>
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-10 max-w-2xl mx-auto">
-              تواصل معانا على واتساب أو على صفحتنا على فيسبوك واحصل على استشارة مجانية لمشروعك القادم.
+              تواصل معنا عبر صفحتنا على فيسبوك أو عبر البريد الإلكتروني للحصول على استشارة مجانية لمشروعك القادم.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a href="https://wa.me/201129211431" target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-accent text-accent-foreground font-bold shadow-accent hover:scale-105 transition-transform">
-                <MessageCircle className="w-5 h-5" /> 
-              </a>
               <a href="https://www.facebook.com/share/1KQTn54X1M/" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/10 border border-white/30 text-primary-foreground font-bold backdrop-blur-sm hover:bg-white/20 transition-colors">
                 <Facebook className="w-5 h-5" /> صفحتنا على فيسبوك
               </a>
             </div>
-            <p className="text-primary-foreground/60 text-xs mt-6">للتواصل عبر واتساب فقط — لا توجد مكالمات.</p>
           </div>
         </div>
       </section>
