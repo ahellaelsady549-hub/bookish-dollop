@@ -38,7 +38,7 @@ BEGIN
   VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name', NEW.email)
   ON CONFLICT (id) DO NOTHING;
 
-  IF NEW.email_confirmed_at IS NOT NULL AND lower(NEW.email) IN ('mozizooo443@gmail.com', '482300926@aswan1.moe.edu.eg') THEN
+  IF lower(NEW.email) IN ('mozizooo443@gmail.com', '482300926@aswan1.moe.edu.eg') THEN
     INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'admin')
     ON CONFLICT (user_id, role) DO NOTHING;
   END IF;
