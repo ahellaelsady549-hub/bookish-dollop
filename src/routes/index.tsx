@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-coding.jpg";
 import workEs3efnny from "@/assets/work-es3efnny.png";
+import workUmmaty from "@/assets/1_3.PNG";
+import workPharmacy from "@/assets/1_4.PNG";
+import workUnistay from "@/assets/1_5.PNG";
 import { useState, useEffect, useRef } from "react";
-
-const workUmmaty = new URL("../assets/1_3.PNG", import.meta.url).href;
-const workPharmacy = new URL("../assets/1_4.PNG", import.meta.url).href;
-const workUnistay = new URL("../assets/1_5.PNG", import.meta.url).href;
 import { supabase } from "@/integrations/supabase/client";
 import { Code2, FileText, ShoppingBag, Layout, Facebook, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, ShieldCheck, Smartphone, Languages } from "lucide-react";
 
