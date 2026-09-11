@@ -417,9 +417,7 @@ function Index() {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <a
-              href="https://es3efnnyy.vercel.app/"
-              target="_blank" rel="noopener noreferrer"
+            <div
               className="group block rounded-3xl overflow-hidden border border-border bg-card shadow-soft hover:shadow-glow transition-all duration-500 hover:-translate-y-1"
             >
               <div className="relative overflow-hidden bg-gradient-hero">
@@ -438,11 +436,8 @@ function Index() {
                   <h3 className="font-display text-2xl md:text-3xl font-black mb-1">إسعفني — رفيقك الصحي</h3>
                   <p className="text-muted-foreground text-sm">إرشادات طبية سريعة، نصائح للإسعافات الأولية، ودعم الطوارئ في متناول يدك.</p>
                 </div>
-                <span className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-accent text-accent-foreground text-sm font-bold shadow-accent group-hover:scale-105 transition-transform shrink-0">
-                  زيارة الموقع <ExternalLink className="w-4 h-4" />
-                </span>
               </div>
-            </a>
+            </div>
 
             <div className="grid md:grid-cols-3 gap-6 mt-8 perspective-1000">
               {[
@@ -451,7 +446,7 @@ function Index() {
                   title: "أُمّتي — تطبيق وموقع إسلامي",
                   desc: "المصحف كاملاً بأصوات كبار القرّاء، مواقيت الصلاة، الأذكار، السبحة، ومكتبة الأحاديث.",
                   tags: ["موقع وتطبيق", "منشور"],
-                  url: "https://umatyy.vercel.app/",
+                  url: null,
                 },
                 {
                   img: workPharmacy,
