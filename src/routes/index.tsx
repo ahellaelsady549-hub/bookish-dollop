@@ -777,9 +777,9 @@ function Index() {
               تواصل معانا على واتساب أو على صفحتنا على فيسبوك واحصل على استشارة مجانية لمشروعك القادم.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a href="https://wa.me/201505235820" target="_blank" rel="noopener noreferrer"
+              <a href="https://wa.me/201129211431" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-accent text-accent-foreground font-bold shadow-accent hover:scale-105 transition-transform">
-                <MessageCircle className="w-5 h-5" /> واتساب: 01505235820
+                <MessageCircle className="w-5 h-5" /> واتساب: 01129211431
               </a>
               <a href="https://www.facebook.com/share/1KQTn54X1M/" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/10 border border-white/30 text-primary-foreground font-bold backdrop-blur-sm hover:bg-white/20 transition-colors">
@@ -806,4 +806,3 @@ function Index() {
     </div>
   );
 }
-
