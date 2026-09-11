@@ -34,7 +34,8 @@ function AdminPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -66,18 +67,56 @@ function AdminPage() {
     e.preventDefault();
     setErr(null);
     setBusy(true);
-    const { data: userData } = await supabase.auth.getUser();
-    const { error } = await supabase.from("projects").insert({
-      title,
-      description: description || null,
-      url: url || null,
-      image_url: imageUrl || null,
-      created_by: userData.user?.id ?? null,
-    });
-    setBusy(false);
-    if (error) { setErr(error.message); return; }
-    setTitle(""); setDescription(""); setUrl(""); setImageUrl("");
-    await load();
+
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      let uploadedImageUrl: string | null = null;
+
+      if (imageFile) {
+        const safeName = imageFile.name
+          .trim()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-zA-Z0-9._-]/g, "-");
+        const filePath = `project-images/${Date.now()}-${safeName}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("project-images")
+          .upload(filePath, imageFile, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: imageFile.type || "image/png",
+          });
+
+        if (uploadError) {
+          throw new Error(uploadError.message || "فشل رفع الصورة.");
+        }
+
+        const { data: publicUrlData } = supabase.storage.from("project-images").getPublicUrl(uploadData.path);
+        uploadedImageUrl = publicUrlData.publicUrl || null;
+      }
+
+      const { error } = await supabase.from("projects").insert({
+        title,
+        description: description || null,
+        url: url || null,
+        image_url: uploadedImageUrl,
+        created_by: userData.user?.id ?? null,
+      });
+
+      if (error) throw new Error(error.message);
+
+      setTitle("");
+      setDescription("");
+      setUrl("");
+      setImageFile(null);
+      setImagePreview(null);
+      await load();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "حدث خطأ غير متوقع.";
+      setErr(message);
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function remove(id: string) {
@@ -142,8 +181,20 @@ function AdminPage() {
               <input value={url} onChange={(e) => setUrl(e.target.value)} dir="ltr" placeholder="https://..." className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary" />
             </div>
             <div>
-              <label className="block text-sm font-bold mb-1.5">رابط الصورة</label>
-              <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} dir="ltr" placeholder="https://..." className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary" />
+              <label className="block text-sm font-bold mb-1.5">إرفاق صورة من الجهاز</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  setImageFile(file);
+                  setImagePreview(file ? URL.createObjectURL(file) : null);
+                }}
+                className="w-full px-3 py-2.5 rounded-xl border border-border bg-background outline-none focus:border-primary file:mr-2 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-primary-foreground file:font-bold file:cursor-pointer"
+              />
+              {imagePreview && (
+                <img src={imagePreview} alt="معاينة المشروع" className="mt-3 h-28 w-full object-cover rounded-xl border border-border" />
+              )}
             </div>
           </div>
           {err && <p className="text-sm text-destructive">{err}</p>}
