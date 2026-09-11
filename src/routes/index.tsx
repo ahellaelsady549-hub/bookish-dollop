@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-coding.jpg";
 import workEs3efnny from "@/assets/work-es3efnny.png";
-import workUmmaty from "@/assets/1_3.PNG";
-import workPharmacy from "@/assets/1_4.PNG";
-import workUnistay from "@/assets/1_5.PNG";
 import { useState, useEffect, useRef } from "react";
+
+const workUmmaty = new URL("../assets/1_3.PNG", import.meta.url).href;
+const workPharmacy = new URL("../assets/1_4.PNG", import.meta.url).href;
+const workUnistay = new URL("../assets/1_5.PNG", import.meta.url).href;
 import { supabase } from "@/integrations/supabase/client";
-import { Code2, FileText, ShoppingBag, Layout, Facebook, MessageCircle, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, LogOut, ShieldCheck, Smartphone, Languages } from "lucide-react";
+import { Code2, FileText, ShoppingBag, Layout, Facebook, MessageCircle, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, ShieldCheck, Smartphone, Languages } from "lucide-react";
 
 type DbProject = {
   id: string;
@@ -90,14 +91,6 @@ function Index() {
       setDbProjects((data ?? []) as DbProject[]);
     })();
   }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setAuthEmail(null);
-    setIsOwner(false);
-  };
-
-
 
   // Reviews state
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -283,12 +276,9 @@ function Index() {
                     <ShieldCheck className="w-4 h-4" /> نشر المشاريع
                   </Link>
                 )}
-                <button
-                  onClick={handleSignOut}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm font-bold hover:bg-accent/10 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" /> خروج
-                </button>
+                <Link to="/settings" aria-label="الإعدادات" title="الإعدادات" className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-border hover:bg-accent/10 transition-colors">
+                  <UserIcon className="w-4 h-4" />
+                </Link>
               </>
             ) : (
               <Link
