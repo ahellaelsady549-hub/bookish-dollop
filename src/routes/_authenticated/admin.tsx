@@ -23,6 +23,7 @@ type Project = {
   description: string | null;
   url: string | null;
   image_url: string | null;
+  project_type: string | null;
   published: boolean;
 };
 
@@ -33,7 +34,9 @@ function AdminPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [projectType, setProjectType] = useState("website");
   const [url, setUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -42,7 +45,7 @@ function AdminPage() {
   const load = useCallback(async () => {
     const { data } = await supabase
       .from("projects")
-      .select("id,title,description,url,image_url,published")
+      .select("id,title,description,url,image_url,project_type,published")
       .order("created_at", { ascending: false });
     setProjects((data ?? []) as Project[]);
   }, []);
@@ -70,7 +73,7 @@ function AdminPage() {
 
     try {
       const { data: userData } = await supabase.auth.getUser();
-      let uploadedImageUrl: string | null = null;
+      let finalImageUrl = imageUrl.trim() || null;
 
       if (imageFile) {
         const safeName = imageFile.name
@@ -79,27 +82,38 @@ function AdminPage() {
           .replace(/[^a-zA-Z0-9._-]/g, "-");
         const filePath = `project-images/${Date.now()}-${safeName}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("project-images")
-          .upload(filePath, imageFile, {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: imageFile.type || "image/png",
-          });
+        try {
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from("project-images")
+            .upload(filePath, imageFile, {
+              cacheControl: "3600",
+              upsert: false,
+              contentType: imageFile.type || "image/png",
+            });
 
-        if (uploadError) {
-          throw new Error(uploadError.message || "فشل رفع الصورة.");
+          if (uploadError) {
+            throw new Error(uploadError.message || "فشل رفع الصورة.");
+          }
+
+          const { data: publicUrlData } = supabase.storage.from("project-images").getPublicUrl(uploadData.path);
+          finalImageUrl = publicUrlData.publicUrl || finalImageUrl;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "حدث خطأ في رفع الصورة.";
+          if (!finalImageUrl && /Bucket not found|bucket/i.test(message)) {
+            throw new Error("لم يتم إنشاء bucket لحفظ الصور في Supabase. أنشئ bucket باسم project-images أو استخدم رابط صورة بديل.");
+          }
+          if (!finalImageUrl) {
+            throw new Error(message);
+          }
         }
-
-        const { data: publicUrlData } = supabase.storage.from("project-images").getPublicUrl(uploadData.path);
-        uploadedImageUrl = publicUrlData.publicUrl || null;
       }
 
       const { error } = await supabase.from("projects").insert({
         title,
         description: description || null,
         url: url || null,
-        image_url: uploadedImageUrl,
+        image_url: finalImageUrl,
+        project_type: projectType,
         created_by: userData.user?.id ?? null,
       });
 
@@ -107,7 +121,9 @@ function AdminPage() {
 
       setTitle("");
       setDescription("");
+      setProjectType("website");
       setUrl("");
+      setImageUrl("");
       setImageFile(null);
       setImagePreview(null);
       await load();
@@ -177,8 +193,30 @@ function AdminPage() {
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
+              <label className="block text-sm font-bold mb-1.5">نوع المشروع</label>
+              <select
+                value={projectType}
+                onChange={(e) => setProjectType(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary"
+              >
+                <option value="website">موقع</option>
+                <option value="app">تطبيق</option>
+                <option value="store">متجر</option>
+                <option value="branding">هوية تجارية</option>
+                <option value="other">أخرى</option>
+              </select>
+            </div>
+            <div>
               <label className="block text-sm font-bold mb-1.5">رابط الموقع</label>
               <input value={url} onChange={(e) => setUrl(e.target.value)} dir="ltr" placeholder="https://..." className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary" />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold mb-1.5">رابط صورة بديل</label>
+              <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} dir="ltr" placeholder="https://..." className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary" />
             </div>
             <div>
               <label className="block text-sm font-bold mb-1.5">إرفاق صورة من الجهاز</label>
@@ -189,6 +227,7 @@ function AdminPage() {
                   const file = e.target.files?.[0] ?? null;
                   setImageFile(file);
                   setImagePreview(file ? URL.createObjectURL(file) : null);
+                  if (file) setImageUrl("");
                 }}
                 className="w-full px-3 py-2.5 rounded-xl border border-border bg-background outline-none focus:border-primary file:mr-2 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-primary-foreground file:font-bold file:cursor-pointer"
               />
@@ -209,6 +248,7 @@ function AdminPage() {
               <div>
                 <h3 className="font-display font-bold text-lg">{p.title}</h3>
                 {p.description && <p className="text-muted-foreground text-sm">{p.description}</p>}
+                {p.project_type && <p className="text-xs font-bold text-primary mt-1">نوع المشروع: {p.project_type}</p>}
                 {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-primary text-sm" dir="ltr">{p.url}</a>}
               </div>
               <div className="flex items-center gap-2 shrink-0">
