@@ -227,6 +227,8 @@ function Index() {
           _captcha: "false",
           الاسم: fd.get("name"),
           الإيميل: fd.get("email"),
+          رقم_الهاتف: fd.get("phone"),
+          رقم_الواتساب: fd.get("whatsapp"),
           نوع_الطلب: fd.get("type"),
           التفاصيل: fd.get("details"),
           خصم_عجلة_الحظ: prize ? `${prize}%` : "لم يلعب",
@@ -553,6 +555,25 @@ function Index() {
                   <input
                     required name="email" type="email" placeholder="you@example.com"
                     className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-bold mb-2">رقم الهاتف <span className="text-accent">*</span></label>
+                  <input
+                    required name="phone" type="tel" placeholder="01012345678"
+                    className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
+                    dir="ltr"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">رقم الواتساب <span className="text-accent">*</span></label>
+                  <input
+                    required name="whatsapp" type="tel" placeholder="01012345678"
+                    className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
+                    dir="ltr"
                   />
                 </div>
               </div>
