@@ -6,7 +6,7 @@ import workPharmacy from "@/assets/work-1_4.png.asset.json";
 import workUnistay from "@/assets/work-1_5.png.asset.json";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Code2, FileText, ShoppingBag, Layout, Facebook, MessageCircle, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, LogOut, ShieldCheck, Smartphone, Languages } from "lucide-react";
+import { Code2, FileText, ShoppingBag, Layout, Facebook, MessageCircle, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, LogOut, ShieldCheck, Smartphone, Languages, Settings } from "lucide-react";
 
 type DbProject = {
   id: string;
@@ -241,6 +241,12 @@ function Index() {
       });
       if (!res.ok) throw new Error("failed");
       setSent(true);
+      setPrize(null);
+      setAlreadySpun(false);
+      setWheelAngle(0);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("wheelPrize");
+      }
       (e.target as HTMLFormElement).reset();
     } catch {
       setError("حدث خطأ، حاول مرة أخرى أو تواصل معنا على واتساب.");
@@ -283,6 +289,12 @@ function Index() {
                     <ShieldCheck className="w-4 h-4" /> نشر المشاريع
                   </Link>
                 )}
+                <Link
+                  to="/settings"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm font-bold hover:bg-accent/10 transition-colors"
+                >
+                  <Settings className="w-4 h-4" /> الإعدادات
+                </Link>
                 <button
                   onClick={handleSignOut}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm font-bold hover:bg-accent/10 transition-colors"
