@@ -247,7 +247,12 @@ function Index() {
       resetWheelState();
       (e.target as HTMLFormElement).reset();
     } catch {
-      setError("حدث خطأ، حاول مرة أخرى أو تواصل معنا على واتساب.");
+      const isLocalEnvironment = typeof window !== "undefined" && /localhost|127\.0\.0\.1/.test(window.location.hostname);
+      setError(
+        isLocalEnvironment
+          ? "FormSubmit لا يعمل من localhost/البيئة المحلية، لذلك الطلب لا يصل. الحل: نشر الموقع على دومين حقيقي أو استخدام خدمة بريد أخرى مثل Resend/EmailJS."
+          : "حدث خطأ أثناء إرسال الطلب. تأكد من أن الموقع يعمل على دومين حقيقي أو جرّب خدمة بريد مختلفة."
+      );
     } finally {
       setSubmitting(false);
     }
