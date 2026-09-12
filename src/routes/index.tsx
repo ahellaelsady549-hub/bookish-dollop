@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-coding.jpg";
 import workEs3efnny from "@/assets/work-es3efnny.png";
-import workUmmaty from "@/assets/1_3.PNG";
-import workPharmacy from "@/assets/1_4.PNG";
-import workUnistay from "@/assets/1_5.PNG";
+import workUmmaty from "@/assets/work-1_3.png.asset.json";
+import workPharmacy from "@/assets/work-1_4.png.asset.json";
+import workUnistay from "@/assets/work-1_5.png.asset.json";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Code2, FileText, ShoppingBag, Layout, Facebook, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, ShieldCheck, Smartphone, Languages } from "lucide-react";
+import { Code2, FileText, ShoppingBag, Layout, Facebook, MessageCircle, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, LogOut, ShieldCheck, Smartphone, Languages } from "lucide-react";
 
 type DbProject = {
   id: string;
@@ -90,6 +90,14 @@ function Index() {
       setDbProjects((data ?? []) as DbProject[]);
     })();
   }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setAuthEmail(null);
+    setIsOwner(false);
+  };
+
+
 
   // Reviews state
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -188,15 +196,6 @@ function Index() {
     setTimeout(() => setRSent(false), 3000);
   };
 
-  const resetWheelState = () => {
-    setPrize(null);
-    setAlreadySpun(false);
-    setWheelAngle(0);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("wheelPrize");
-    }
-  };
-
   const spinWheel = () => {
     if (spinning || alreadySpun) return;
     setSpinning(true);
@@ -225,34 +224,26 @@ function Index() {
     setError(null);
     setSubmitting(true);
     const fd = new FormData(e.currentTarget);
-
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("https://formsubmit.co/ajax/482300926@aswan1.moe.edu.eg", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          name: String(fd.get("name") ?? ""),
-          email: String(fd.get("email") ?? ""),
-          phone: String(fd.get("phone") ?? ""),
-          type: String(fd.get("type") ?? ""),
-          details: String(fd.get("details") ?? ""),
-          prize: prize ?? null,
+          _subject: `طلب جديد من ${fd.get("name")} — ${fd.get("type")}`,
+          _template: "table",
+          _captcha: "false",
+          الاسم: fd.get("name"),
+          الإيميل: fd.get("email"),
+          نوع_الطلب: fd.get("type"),
+          التفاصيل: fd.get("details"),
+          خصم_عجلة_الحظ: prize ? `${prize}%` : "لم يلعب",
         }),
       });
-
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || data?.success === false) throw new Error("failed");
-
+      if (!res.ok) throw new Error("failed");
       setSent(true);
-      resetWheelState();
       (e.target as HTMLFormElement).reset();
-    } catch (err) {
-      const errorMessage = err instanceof Error && err.message ? err.message : "";
-      setError(
-        errorMessage.includes("RESEND") || errorMessage.includes("Missing")
-          ? "إعدادات البريد غير متاحة على الخادم الآن. أضف مفتاح Resend في متغيرات البيئة ثم أعد التشغيل."
-          : "حدث خطأ أثناء إرسال الطلب. تأكد من أن إعدادات البريد على الخادم صحيحة." 
-      );
+    } catch {
+      setError("حدث خطأ، حاول مرة أخرى أو تواصل معنا على واتساب.");
     } finally {
       setSubmitting(false);
     }
@@ -292,9 +283,12 @@ function Index() {
                     <ShieldCheck className="w-4 h-4" /> نشر المشاريع
                   </Link>
                 )}
-                <Link to="/settings" aria-label="الإعدادات" title="الإعدادات" className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-border hover:bg-accent/10 transition-colors">
-                  <UserIcon className="w-4 h-4" />
-                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm font-bold hover:bg-accent/10 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" /> خروج
+                </button>
               </>
             ) : (
               <Link
@@ -433,7 +427,9 @@ function Index() {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <div
+            <a
+              href="https://es3efnnyy.vercel.app/"
+              target="_blank" rel="noopener noreferrer"
               className="group block rounded-3xl overflow-hidden border border-border bg-card shadow-soft hover:shadow-glow transition-all duration-500 hover:-translate-y-1"
             >
               <div className="relative overflow-hidden bg-gradient-hero">
@@ -452,27 +448,30 @@ function Index() {
                   <h3 className="font-display text-2xl md:text-3xl font-black mb-1">إسعفني — رفيقك الصحي</h3>
                   <p className="text-muted-foreground text-sm">إرشادات طبية سريعة، نصائح للإسعافات الأولية، ودعم الطوارئ في متناول يدك.</p>
                 </div>
+                <span className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-accent text-accent-foreground text-sm font-bold shadow-accent group-hover:scale-105 transition-transform shrink-0">
+                  زيارة الموقع <ExternalLink className="w-4 h-4" />
+                </span>
               </div>
-            </div>
+            </a>
 
             <div className="grid md:grid-cols-3 gap-6 mt-8 perspective-1000">
               {[
                 {
-                  img: workUmmaty,
+                  img: workUmmaty.url,
                   title: "أُمّتي — تطبيق وموقع إسلامي",
                   desc: "المصحف كاملاً بأصوات كبار القرّاء، مواقيت الصلاة، الأذكار، السبحة، ومكتبة الأحاديث.",
                   tags: ["موقع وتطبيق", "منشور"],
-                  url: null,
+                  url: "https://ummaty1.vercel.app/",
                 },
                 {
-                  img: workPharmacy,
+                  img: workPharmacy.url,
                   title: "تطبيق إدارة مبيعات صيدلية",
                   desc: "لوحة تحكم شاملة: نقطة البيع، المخزون والأصناف، المشتريات، الموردين، والأرباح اليومية.",
                   tags: ["تطبيق إدارة", "عميل حقيقي"],
                   url: null,
                 },
                 {
-                  img: workUnistay,
+                  img: workUnistay.url,
                   title: "UNIstay finder",
                   desc: "تطبيق للبحث عن السكن الجامعي في كل محافظات مصر بأسعار واضحة وتواصل مباشر مع الملاك.",
                   tags: ["تطبيق", "تحت الإنشاء"],
@@ -491,6 +490,11 @@ function Index() {
                     </div>
                     <h3 className="font-display text-xl font-black mb-2">{p.title}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4">{p.desc}</p>
+                    {p.url && (
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-accent text-accent-foreground text-sm font-bold shadow-accent hover:scale-105 transition-transform">
+                        زيارة الموقع <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
@@ -508,6 +512,11 @@ function Index() {
                     <div className="p-6">
                       <h3 className="font-display text-xl font-black mb-2">{p.title}</h3>
                       {p.description && <p className="text-muted-foreground text-sm mb-4">{p.description}</p>}
+                      {p.url && (
+                        <a href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-accent text-accent-foreground text-sm font-bold shadow-accent">
+                          زيارة الموقع <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -534,7 +543,7 @@ function Index() {
                 <CheckCircle2 className="w-8 h-8 text-accent-foreground" />
               </div>
               <h3 className="font-display text-2xl font-black mb-2">تم إرسال طلبك بنجاح</h3>
-              <p className="text-muted-foreground">سنتواصل معك قريباً على الإيميل.</p>
+              <p className="text-muted-foreground">سنتواصل معك قريباً على الإيميل أو واتساب.</p>
               <button onClick={() => setSent(false)} className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-bold hover:scale-105 transition-transform">
                 إرسال طلب آخر
               </button>
@@ -545,7 +554,7 @@ function Index() {
                 <div>
                   <label className="block text-sm font-bold mb-2">الاسم ثلاثي <span className="text-accent">*</span></label>
                   <input
-                    required name="name" type="text" placeholder="خالد أحمد السيد"
+                    required name="name" type="text" placeholder="مثال: حمزة محمد حسام"
                     className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
                   />
                 </div>
@@ -556,15 +565,6 @@ function Index() {
                     className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold mb-2">رقم الهاتف <span className="text-accent">*</span></label>
-                <input
-                  required name="phone" type="tel" placeholder="01012345678"
-                  className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
-                  dir="ltr"
-                />
               </div>
 
               <div>
@@ -774,14 +774,19 @@ function Index() {
               عندك فكرة؟ <span className="text-gradient">خلّينا ننفّذها</span>
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-10 max-w-2xl mx-auto">
-              تواصل معنا عبر صفحتنا على فيسبوك أو عبر البريد الإلكتروني للحصول على استشارة مجانية لمشروعك القادم.
+              تواصل معانا على واتساب أو على صفحتنا على فيسبوك واحصل على استشارة مجانية لمشروعك القادم.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
+              <a href="https://wa.me/201505235820" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-accent text-accent-foreground font-bold shadow-accent hover:scale-105 transition-transform">
+                <MessageCircle className="w-5 h-5" /> واتساب: 01505235820
+              </a>
               <a href="https://www.facebook.com/share/1KQTn54X1M/" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/10 border border-white/30 text-primary-foreground font-bold backdrop-blur-sm hover:bg-white/20 transition-colors">
                 <Facebook className="w-5 h-5" /> صفحتنا على فيسبوك
               </a>
             </div>
+            <p className="text-primary-foreground/60 text-xs mt-6">للتواصل عبر واتساب فقط — لا توجد مكالمات.</p>
           </div>
         </div>
       </section>
