@@ -66,9 +66,48 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return brandedErrorResponse();
 }
 
+async function proxyOrderFormToFormsubmit(request: Request): Promise<Response | null> {
+  const url = new URL(request.url);
+  if (request.method !== "POST" || url.pathname !== "/api/contact") return null;
+
+  const payload = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const submission = {
+    _subject: `طلب جديد من ${String(payload.name ?? "غير محدد")} — ${String(payload.type ?? "غير محدد")}`,
+    _template: "table",
+    _captcha: "false",
+    الاسم: String(payload.name ?? ""),
+    الإيميل: String(payload.email ?? ""),
+    رقم_الهاتف: String(payload.phone ?? ""),
+    نوع_الطلب: String(payload.type ?? ""),
+    التفاصيل: String(payload.details ?? ""),
+    خصم_عجلة_الحظ: payload.prize ? `${payload.prize}%` : "لم يلعب",
+  };
+
+  const upstream = await fetch("https://formsubmit.co/ajax/482300926@aswan1.moe.edu.eg", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(submission),
+  });
+
+  const text = await upstream.text();
+  return new Response(text, {
+    status: upstream.status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "access-control-allow-origin": "*",
+    },
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const proxied = await proxyOrderFormToFormsubmit(request);
+      if (proxied) return proxied;
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
