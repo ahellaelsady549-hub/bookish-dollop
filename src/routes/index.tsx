@@ -246,12 +246,12 @@ function Index() {
       setSent(true);
       resetWheelState();
       (e.target as HTMLFormElement).reset();
-    } catch {
-      const isLocalEnvironment = typeof window !== "undefined" && /localhost|127\.0\.0\.1/.test(window.location.hostname);
+    } catch (err) {
+      const errorMessage = err instanceof Error && err.message ? err.message : "";
       setError(
-        isLocalEnvironment
-          ? "FormSubmit لا يعمل من localhost/البيئة المحلية، لذلك الطلب لا يصل. الحل: نشر الموقع على دومين حقيقي أو استخدام خدمة بريد أخرى مثل Resend/EmailJS."
-          : "حدث خطأ أثناء إرسال الطلب. تأكد من أن الموقع يعمل على دومين حقيقي أو جرّب خدمة بريد مختلفة."
+        errorMessage.includes("RESEND") || errorMessage.includes("Missing")
+          ? "إعدادات البريد غير متاحة على الخادم الآن. أضف مفتاح Resend في متغيرات البيئة ثم أعد التشغيل."
+          : "حدث خطأ أثناء إرسال الطلب. تأكد من أن إعدادات البريد على الخادم صحيحة." 
       );
     } finally {
       setSubmitting(false);
