@@ -225,25 +225,24 @@ function Index() {
     setError(null);
     setSubmitting(true);
     const fd = new FormData(e.currentTarget);
-    const payload = {
-      _subject: `طلب جديد من ${String(fd.get("name") ?? "") || "غير محدد"} — ${String(fd.get("type") ?? "") || "غير محدد"}`,
-      _template: "table",
-      _captcha: "false",
-      الاسم: String(fd.get("name") ?? ""),
-      الإيميل: String(fd.get("email") ?? ""),
-      رقم_الهاتف: String(fd.get("phone") ?? ""),
-      نوع_الطلب: String(fd.get("type") ?? ""),
-      التفاصيل: String(fd.get("details") ?? ""),
-      خصم_عجلة_الحظ: prize ? `${prize}%` : "لم يلعب",
-    };
 
     try {
-      const res = await fetch("https://formsubmit.co/ajax/482300926@aswan1.moe.edu.eg", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          name: String(fd.get("name") ?? ""),
+          email: String(fd.get("email") ?? ""),
+          phone: String(fd.get("phone") ?? ""),
+          type: String(fd.get("type") ?? ""),
+          details: String(fd.get("details") ?? ""),
+          prize: prize ?? null,
+        }),
       });
-      if (!res.ok) throw new Error("failed");
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.success === false) throw new Error("failed");
+
       setSent(true);
       resetWheelState();
       (e.target as HTMLFormElement).reset();
