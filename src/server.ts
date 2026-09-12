@@ -66,46 +66,76 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return brandedErrorResponse();
 }
 
-async function proxyOrderFormToFormsubmit(request: Request): Promise<Response | null> {
+async function proxyOrderFormToEmailService(request: Request): Promise<Response | null> {
   const url = new URL(request.url);
   if (request.method !== "POST" || url.pathname !== "/api/contact") return null;
 
   const payload = (await request.json().catch(() => ({}))) as Record<string, unknown>;
-  const submission = {
-    _subject: `طلب جديد من ${String(payload.name ?? "غير محدد")} — ${String(payload.type ?? "غير محدد")}`,
-    _template: "table",
-    _captcha: "false",
-    الاسم: String(payload.name ?? ""),
-    الإيميل: String(payload.email ?? ""),
-    رقم_الهاتف: String(payload.phone ?? ""),
-    نوع_الطلب: String(payload.type ?? ""),
-    التفاصيل: String(payload.details ?? ""),
-    خصم_عجلة_الحظ: payload.prize ? `${payload.prize}%` : "لم يلعب",
-  };
+  const name = String(payload.name ?? "غير محدد");
+  const email = String(payload.email ?? "");
+  const phone = String(payload.phone ?? "");
+  const type = String(payload.type ?? "غير محدد");
+  const details = String(payload.details ?? "");
+  const prize = payload.prize ? `${payload.prize}%` : "لم يلعب";
+  const recipient = "482300926@aswan1.moe.edu.eg";
 
-  const upstream = await fetch("https://formsubmit.co/ajax/482300926@aswan1.moe.edu.eg", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(submission),
-  });
+  const runtimeEnv = (globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+  const importMetaEnv = (globalThis as typeof globalThis & { __vite_ssr_import_meta__?: { env?: Record<string, string | undefined> } }).__vite_ssr_import_meta__?.env ?? {};
+  const apiKey = runtimeEnv.RESEND_API_KEY ?? importMetaEnv.RESEND_API_KEY;
+  const fromEmail = runtimeEnv.RESEND_FROM_EMAIL ?? importMetaEnv.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
-  const text = await upstream.text();
-  return new Response(text, {
-    status: upstream.status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "access-control-allow-origin": "*",
-    },
+  if (apiKey) {
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [recipient],
+        reply_to: email || undefined,
+        subject: `طلب جديد من ${name} — ${type}`,
+        html: `
+          <h2>طلب جديد</h2>
+          <p><strong>الاسم:</strong> ${name}</p>
+          <p><strong>الإيميل:</strong> ${email}</p>
+          <p><strong>رقم الهاتف:</strong> ${phone}</p>
+          <p><strong>نوع الطلب:</strong> ${type}</p>
+          <p><strong>خصم العجلة:</strong> ${prize}</p>
+          <p><strong>التفاصيل:</strong></p>
+          <p>${details.replace(/\n/g, "<br />")}</p>
+        `,
+      }),
+    });
+
+    const json = await resendResponse.json().catch(() => ({}));
+    if (!resendResponse.ok) {
+      return new Response(JSON.stringify({ success: false, message: json?.message ?? "Failed to send email with Resend." }), {
+        status: 502,
+        headers: { "content-type": "application/json; charset=utf-8", "access-control-allow-origin": "*" },
+      });
+    }
+
+    return new Response(JSON.stringify({ success: true, message: "Email sent successfully." }), {
+      status: 200,
+      headers: { "content-type": "application/json; charset=utf-8", "access-control-allow-origin": "*" },
+    });
+  }
+
+  return new Response(JSON.stringify({
+    success: false,
+    message: "Missing RESEND_API_KEY / RESEND_FROM_EMAIL in environment. Add them to deploy environment and restart the app.",
+  }), {
+    status: 500,
+    headers: { "content-type": "application/json; charset=utf-8", "access-control-allow-origin": "*" },
   });
 }
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
-      const proxied = await proxyOrderFormToFormsubmit(request);
+      const proxied = await proxyOrderFormToEmailService(request);
       if (proxied) return proxied;
 
       const handler = await getServerEntry();
