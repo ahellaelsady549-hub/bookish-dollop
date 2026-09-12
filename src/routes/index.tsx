@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-coding.jpg";
 import workEs3efnny from "@/assets/work-es3efnny.png";
-import workUmmaty from "@/assets/work-1_3.png.asset.json";
-import workPharmacy from "@/assets/work-1_4.png.asset.json";
-import workUnistay from "@/assets/work-1_5.png.asset.json";
+import workUmmaty from "@/assets/1_3.PNG";
+import workPharmacy from "@/assets/1_4.PNG";
+import workUnistay from "@/assets/1_5.PNG";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Code2, FileText, ShoppingBag, Layout, Facebook, MessageCircle, Sparkles, ArrowLeft, PenTool, ExternalLink, Construction, Send, CheckCircle2, Moon, Sun, Gift, Megaphone, Package, Star, Mail, Phone, User as UserIcon, LogIn, LogOut, ShieldCheck, Smartphone, Languages, Settings } from "lucide-react";
@@ -96,8 +96,6 @@ function Index() {
     setAuthEmail(null);
     setIsOwner(false);
   };
-
-
 
   // Reviews state
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -439,11 +437,7 @@ function Index() {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <a
-              href="https://es3efnnyy.vercel.app/"
-              target="_blank" rel="noopener noreferrer"
-              className="group block rounded-3xl overflow-hidden border border-border bg-card shadow-soft hover:shadow-glow transition-all duration-500 hover:-translate-y-1"
-            >
+            <div className="group block rounded-3xl overflow-hidden border border-border bg-card shadow-soft hover:shadow-glow transition-all duration-500 hover:-translate-y-1">
               <div className="relative overflow-hidden bg-gradient-hero">
                 <img
                   src={workEs3efnny}
@@ -460,34 +454,28 @@ function Index() {
                   <h3 className="font-display text-2xl md:text-3xl font-black mb-1">إسعفني — رفيقك الصحي</h3>
                   <p className="text-muted-foreground text-sm">إرشادات طبية سريعة، نصائح للإسعافات الأولية، ودعم الطوارئ في متناول يدك.</p>
                 </div>
-                <span className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-accent text-accent-foreground text-sm font-bold shadow-accent group-hover:scale-105 transition-transform shrink-0">
-                  زيارة الموقع <ExternalLink className="w-4 h-4" />
-                </span>
               </div>
-            </a>
+            </div>
 
             <div className="grid md:grid-cols-3 gap-6 mt-8 perspective-1000">
               {[
                 {
-                  img: workUmmaty.url,
+                  img: workUmmaty,
                   title: "أُمّتي — تطبيق وموقع إسلامي",
                   desc: "المصحف كاملاً بأصوات كبار القرّاء، مواقيت الصلاة، الأذكار، السبحة، ومكتبة الأحاديث.",
                   tags: ["موقع وتطبيق", "منشور"],
-                  url: "https://ummaty1.vercel.app/",
                 },
                 {
-                  img: workPharmacy.url,
+                  img: workPharmacy,
                   title: "تطبيق إدارة مبيعات صيدلية",
                   desc: "لوحة تحكم شاملة: نقطة البيع، المخزون والأصناف، المشتريات، الموردين، والأرباح اليومية.",
                   tags: ["تطبيق إدارة", "عميل حقيقي"],
-                  url: null,
                 },
                 {
-                  img: workUnistay.url,
+                  img: workUnistay,
                   title: "UNIstay finder",
                   desc: "تطبيق للبحث عن السكن الجامعي في كل محافظات مصر بأسعار واضحة وتواصل مباشر مع الملاك.",
                   tags: ["تطبيق", "تحت الإنشاء"],
-                  url: null,
                 },
               ].map((p) => (
                 <div key={p.title} className="card-3d group rounded-3xl overflow-hidden border border-border bg-card shadow-soft hover:shadow-glow">
@@ -501,12 +489,7 @@ function Index() {
                       ))}
                     </div>
                     <h3 className="font-display text-xl font-black mb-2">{p.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-4">{p.desc}</p>
-                    {p.url && (
-                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-accent text-accent-foreground text-sm font-bold shadow-accent hover:scale-105 transition-transform">
-                        زيارة الموقع <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
+                    <p className="text-muted-foreground text-sm leading-relaxed">{p.desc}</p>
                   </div>
                 </div>
               ))}
@@ -566,7 +549,7 @@ function Index() {
                 <div>
                   <label className="block text-sm font-bold mb-2">الاسم ثلاثي <span className="text-accent">*</span></label>
                   <input
-                    required name="name" type="text" placeholder="مثال: حمزة محمد حسام"
+                    required name="name" type="text" placeholder="خالد أحمد السيد"
                     className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
                   />
                 </div>
@@ -789,9 +772,9 @@ function Index() {
               تواصل معانا على واتساب أو على صفحتنا على فيسبوك واحصل على استشارة مجانية لمشروعك القادم.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a href="https://wa.me/201505235820" target="_blank" rel="noopener noreferrer"
+              <a href="https://wa.me/201129211431" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-accent text-accent-foreground font-bold shadow-accent hover:scale-105 transition-transform">
-                <MessageCircle className="w-5 h-5" /> واتساب: 01505235820
+                <MessageCircle className="w-5 h-5" /> واتساب: 01129211431
               </a>
               <a href="https://www.facebook.com/share/1KQTn54X1M/" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/10 border border-white/30 text-primary-foreground font-bold backdrop-blur-sm hover:bg-white/20 transition-colors">
