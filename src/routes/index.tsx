@@ -188,6 +188,15 @@ function Index() {
     setTimeout(() => setRSent(false), 3000);
   };
 
+  const resetWheelState = () => {
+    setPrize(null);
+    setAlreadySpun(false);
+    setWheelAngle(0);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("wheelPrize");
+    }
+  };
+
   const spinWheel = () => {
     if (spinning || alreadySpun) return;
     setSpinning(true);
@@ -216,24 +225,27 @@ function Index() {
     setError(null);
     setSubmitting(true);
     const fd = new FormData(e.currentTarget);
+    const payload = {
+      _subject: `طلب جديد من ${String(fd.get("name") ?? "") || "غير محدد"} — ${String(fd.get("type") ?? "") || "غير محدد"}`,
+      _template: "table",
+      _captcha: "false",
+      الاسم: String(fd.get("name") ?? ""),
+      الإيميل: String(fd.get("email") ?? ""),
+      رقم_الهاتف: String(fd.get("phone") ?? ""),
+      نوع_الطلب: String(fd.get("type") ?? ""),
+      التفاصيل: String(fd.get("details") ?? ""),
+      خصم_عجلة_الحظ: prize ? `${prize}%` : "لم يلعب",
+    };
+
     try {
       const res = await fetch("https://formsubmit.co/ajax/482300926@aswan1.moe.edu.eg", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          _subject: `طلب جديد من ${fd.get("name")} — ${fd.get("type")}`,
-          _template: "table",
-          _captcha: "false",
-          الاسم: fd.get("name"),
-          الإيميل: fd.get("email"),
-          رقم_الهاتف: fd.get("phone"),
-          نوع_الطلب: fd.get("type"),
-          التفاصيل: fd.get("details"),
-          خصم_عجلة_الحظ: prize ? `${prize}%` : "لم يلعب",
-        }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("failed");
       setSent(true);
+      resetWheelState();
       (e.target as HTMLFormElement).reset();
     } catch {
       setError("حدث خطأ، حاول مرة أخرى أو تواصل معنا على واتساب.");
@@ -475,11 +487,6 @@ function Index() {
                     </div>
                     <h3 className="font-display text-xl font-black mb-2">{p.title}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4">{p.desc}</p>
-                    {p.url && (
-                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-accent text-accent-foreground text-sm font-bold shadow-accent hover:scale-105 transition-transform">
-                        زيارة الموقع <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
                   </div>
                 </div>
               ))}
@@ -497,11 +504,6 @@ function Index() {
                     <div className="p-6">
                       <h3 className="font-display text-xl font-black mb-2">{p.title}</h3>
                       {p.description && <p className="text-muted-foreground text-sm mb-4">{p.description}</p>}
-                      {p.url && (
-                        <a href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-accent text-accent-foreground text-sm font-bold shadow-accent">
-                          زيارة الموقع <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
                     </div>
                   </div>
                 ))}
