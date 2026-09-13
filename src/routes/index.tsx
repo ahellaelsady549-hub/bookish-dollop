@@ -217,37 +217,44 @@ function Index() {
     localStorage.setItem("theme", next ? "dark" : "light");
   };
 
+  const resetWheelState = () => {
+    setPrize(null);
+    setAlreadySpun(false);
+    setWheelAngle(0);
+    setSpinning(false);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("wheelPrize");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     const fd = new FormData(e.currentTarget);
+    const payload = {
+      name: String(fd.get("name") ?? ""),
+      email: String(fd.get("email") ?? ""),
+      phone: String(fd.get("phone") ?? ""),
+      type: String(fd.get("type") ?? ""),
+      details: String(fd.get("details") ?? ""),
+      prize: prize ?? 0,
+    };
+
     try {
-      const res = await fetch("https://formsubmit.co/ajax/482300926@aswan1.moe.edu.eg", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          _subject: `طلب جديد من ${fd.get("name")} — ${fd.get("type")}`,
-          _template: "table",
-          _captcha: "false",
-          الاسم: fd.get("name"),
-          الإيميل: fd.get("email"),
-          نوع_الطلب: fd.get("type"),
-          التفاصيل: fd.get("details"),
-          خصم_عجلة_الحظ: prize ? `${prize}%` : "لم يلعب",
-        }),
+        body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("failed");
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((json as { message?: string }).message ?? "failed");
       setSent(true);
-      setPrize(null);
-      setAlreadySpun(false);
-      setWheelAngle(0);
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("wheelPrize");
-      }
+      resetWheelState();
       (e.target as HTMLFormElement).reset();
-    } catch {
-      setError("حدث خطأ، حاول مرة أخرى أو تواصل معنا على واتساب.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "حدث خطأ، حاول مرة أخرى أو تواصل معنا على واتساب.";
+      setError(message || "حدث خطأ، حاول مرة أخرى أو تواصل معنا على واتساب.");
     } finally {
       setSubmitting(false);
     }
@@ -539,7 +546,13 @@ function Index() {
               </div>
               <h3 className="font-display text-2xl font-black mb-2">تم إرسال طلبك بنجاح</h3>
               <p className="text-muted-foreground">سنتواصل معك قريباً على الإيميل أو واتساب.</p>
-              <button onClick={() => setSent(false)} className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-bold hover:scale-105 transition-transform">
+              <button
+                onClick={() => {
+                  resetWheelState();
+                  setSent(false);
+                }}
+                className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-bold hover:scale-105 transition-transform"
+              >
                 إرسال طلب آخر
               </button>
             </div>
@@ -560,6 +573,14 @@ function Index() {
                     className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">رقم الهاتف <span className="text-accent">*</span></label>
+                <input
+                  required name="phone" type="tel" placeholder="01012345678"
+                  className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
+                />
               </div>
 
               <div>
@@ -772,7 +793,7 @@ function Index() {
               تواصل معانا على واتساب أو على صفحتنا على فيسبوك واحصل على استشارة مجانية لمشروعك القادم.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a href="https://wa.me/201129211431" target="_blank" rel="noopener noreferrer"
+              <a href="" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-accent text-accent-foreground font-bold shadow-accent hover:scale-105 transition-transform">
                 <MessageCircle className="w-5 h-5" /> واتساب: 01129211431
               </a>
